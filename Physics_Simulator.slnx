@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Physics_Simularor.vcxproj" />
+  <Project Path="Physics_Simularor.vcxproj" Id="306e83ac-d618-4378-98a8-cc42050fbc0e" />
 </Solution>
