@@ -1,10 +1,11 @@
 #include <SFML/Graphics.hpp>
-#include "events.hpp"
-#include "configuration.hpp"
+#include "events.h"
+#include "configuration.h"
+#include "object.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode::getDesktopMode(), config::WINDOW_TITLE, sf::Style::None);
+    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), config::WINDOW_TITLE, sf::Style::Default);
     window.setFramerateLimit(config::FRAMERATE_LIMIT);
     // Force OS focus onto the SFML window
     window.requestFocus();

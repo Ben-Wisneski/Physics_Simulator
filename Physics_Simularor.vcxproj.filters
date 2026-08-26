@@ -23,11 +23,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="events.hpp">
+    <ClInclude Include="events.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="configuration.hpp">
+    <ClInclude Include="configuration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="planning.txt" />
   </ItemGroup>
 </Project>

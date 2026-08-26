@@ -1,4 +1,6 @@
-#include "events.hpp"
+#include <iostream>
+#include "events.h"
+#include "object.h"
 
 void handleWindowEvents(sf::RenderWindow& window, const sf::Event& event)
 {
@@ -17,10 +19,37 @@ void handleWindowEvents(sf::RenderWindow& window, const sf::Event& event)
 
 void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, sf::CircleShape& shape){
 	// Handle events related to objects here
-        if (event.is<sf::Event::MouseButtonPressed>())
+	//should be able to click and drag the shape around the window
+    bool isDragged = false;
+
+		
+    if (event.is<sf::Event::MouseButtonPressed>())
+    {
+        //Here is where you can handle mouse click events on the shape
+            
+        const auto *mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>();
+        sf::Vector2i mousePos = mouseButtonPressed->position;
+		std::cout << "Mouse clicked at: " << mousePos.x << ", " << mousePos.y << std::endl;
+        std::cout << "Object position: " << shape.getPosition().x << ", " << shape.getPosition().y << std::endl;
+        if(static_cast<sf::Vector2f>(mousePos) == shape.getPosition())
         {
-            window.close();
+			isDragged = true;
+            std::cout << "Clicked the object!" << std::endl;
         }
+
+    }
+
+    if(event.is<sf::Event::MouseButtonReleased>())
+    {
+        isDragged = false;
+    }
+
+    if (isDragged && event.is<sf::Event::MouseMoved>())
+    {
+        const auto* mouseButtonMoved = event.getIf<sf::Event::MouseMoved>();
+        sf::Vector2i mousePos = mouseButtonMoved->position;
+        std::cout << "Mouse moved to: " << mousePos.x << ", " << mousePos.y << std::endl;
+    }
 }
 
 void processEvents(sf::RenderWindow& window, const sf::Event& event, sf::CircleShape& shape)

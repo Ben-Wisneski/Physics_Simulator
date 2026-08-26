@@ -152,8 +152,11 @@ gdi32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDepend
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="configuration.hpp" />
-    <ClInclude Include="events.hpp" />
+    <ClInclude Include="configuration.h" />
+    <ClInclude Include="events.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="planning.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
