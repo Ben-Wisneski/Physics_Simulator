@@ -2,6 +2,11 @@
 #include "events.h"
 #include "object.h"
 
+//global variable to track if the shape is being dragged
+bool isDragged = false;
+sf::Vector2f dragOffset;
+int indexOfDraggedShape = -1;
+
 void handleWindowEvents(sf::RenderWindow& window, const sf::Event& event)
 {
     //handles closing the window and pressing escape to close the window
@@ -17,10 +22,10 @@ void handleWindowEvents(sf::RenderWindow& window, const sf::Event& event)
     }
 }
 
-void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, sf::CircleShape& shape){
+void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector){
 	// Handle events related to objects here
 	//should be able to click and drag the shape around the window
-    bool isDragged = false;
+    
 
 		
     if (event.is<sf::Event::MouseButtonPressed>())
@@ -29,14 +34,18 @@ void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, sf::Ci
             
         const auto *mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>();
         sf::Vector2i mousePos = mouseButtonPressed->position;
-		std::cout << "Mouse clicked at: " << mousePos.x << ", " << mousePos.y << std::endl;
-        std::cout << "Object position: " << shape.getPosition().x << ", " << shape.getPosition().y << std::endl;
-        if(static_cast<sf::Vector2f>(mousePos) == shape.getPosition())
+        for(int index = 0; index < circleVector.size(); ++index)
         {
-			isDragged = true;
-            std::cout << "Clicked the object!" << std::endl;
-        }
+            if (circleVector[index].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+            {
+				//set the isDragged flag to true and store the index of the shape being dragged
+                isDragged = true;
+				indexOfDraggedShape = index;
+                //mark the offset between the mouse position and the shape's position so that the shape doesn't jump to the mouse position when dragging
+                dragOffset = static_cast<sf::Vector2f>(mousePos) - circleVector[index].getPosition();
 
+            }
+        }
     }
 
     if(event.is<sf::Event::MouseButtonReleased>())
@@ -48,12 +57,13 @@ void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, sf::Ci
     {
         const auto* mouseButtonMoved = event.getIf<sf::Event::MouseMoved>();
         sf::Vector2i mousePos = mouseButtonMoved->position;
-        std::cout << "Mouse moved to: " << mousePos.x << ", " << mousePos.y << std::endl;
+		//here is where to use the dragOffset and the indexOfDraggedShape to move the shape around the window
+        circleVector[indexOfDraggedShape].setPosition(static_cast<sf::Vector2f>(mousePos) - dragOffset);
     }
 }
 
-void processEvents(sf::RenderWindow& window, const sf::Event& event, sf::CircleShape& shape)
+void processEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector)
 {
 	handleWindowEvents(window, event);
-	handleObjectEvents(window, event, shape);
+	handleObjectEvents(window, event, circleVector);
 }

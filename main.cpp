@@ -1,3 +1,4 @@
+#include <vector>
 #include <SFML/Graphics.hpp>
 #include "events.h"
 #include "configuration.h"
@@ -15,15 +16,22 @@ int main()
     shape.setFillColor(sf::Color::Green);
 	shape.setPointCount(5);
 
+	sf::CircleShape shape2(50.f);
+	shape2.setFillColor(sf::Color::Blue);
+	shape2.setPosition({ 200.f, 200.f });
 
+    std::vector<sf::CircleShape> circleVector = {shape, shape2};
     while (window.isOpen())
     {
 		// Handle events
-        while (const std::optional event = window.pollEvent()) { processEvents(window, *event, shape); }
+        while (const std::optional event = window.pollEvent()) { processEvents(window, *event, circleVector); }
             
-		// Clear the window, draw the shape, and display the contents
+		// Clear the window, draw the shape vector, and display the contents
         window.clear();
-        window.draw(shape);
+        for (const auto& s : circleVector) 
+        {
+            window.draw(s);
+        }
         window.display();
     }
 }
