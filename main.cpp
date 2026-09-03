@@ -1,8 +1,13 @@
 #include <vector>
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "events.h"
 #include "configuration.h"
 #include "object.h"
+#include "menu.h"
+
+//Menu that can be accessed in the main loop and event processing
+menu* Menu = new menu();
 
 int main()
 {
@@ -16,22 +21,18 @@ int main()
     shape.setFillColor(sf::Color::Green);
 	shape.setPointCount(5);
 
-	sf::CircleShape shape2(50.f);
-	shape2.setFillColor(sf::Color::Blue);
-	shape2.setPosition({ 200.f, 200.f });
-
-    std::vector<sf::CircleShape> circleVector = {shape, shape2};
+    std::vector<sf::CircleShape> circleVector = {shape};
     while (window.isOpen())
     {
 		// Handle events
-        while (const std::optional event = window.pollEvent()) { processEvents(window, *event, circleVector); }
+        while (const std::optional event = window.pollEvent()) { processEvents(window, *event, circleVector, *Menu); }
             
 		// Clear the window, draw the shape vector, and display the contents
         window.clear();
-        for (const auto& s : circleVector) 
-        {
-            window.draw(s);
-        }
+        for (const auto& s : circleVector) window.draw(s);
+
+        if (Menu->getIsVisible()) window.draw(Menu->getMenuBox());
+
         window.display();
     }
 }
