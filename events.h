@@ -3,10 +3,10 @@
 #include "menu.h"
 
 
-void handleWindowEvents(sf::RenderWindow& window, const sf::Event& event);
+void handleWindowEvents(sf::RenderWindow&, const sf::Event&);
 
-void handleRightClickMenu(sf::RenderWindow& window, const sf::Event& event, menu& menu);
+void handleRightClickMenu(sf::RenderWindow&, const sf::Event&, menu&);
 
-void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, menu& menu);
+void handleObjectEvents(sf::RenderWindow&, const sf::Event&, std::vector<sf::CircleShape>&, std::vector<menu>&, std::vector<sf::RectangleShape>&, menu&);
 
-void processEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, menu& menu);
+void processEvents(sf::RenderWindow&, const sf::Event&, std::vector<sf::CircleShape>&, std::vector<sf::RectangleShape>&, std::vector<menu>&, menu&);

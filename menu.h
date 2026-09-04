@@ -20,6 +20,5 @@ public:
 	void setOnObject(bool onObj);
 	void setPosition(sf::Vector2f pos);
 
-	sf::RectangleShape getMenuBox() const;
+	sf::RectangleShape getMenuBox();
 };
-
