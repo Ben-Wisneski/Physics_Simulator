@@ -9,6 +9,6 @@ namespace config {
 	const std::string WINDOW_TITLE = "My SFML Application";
 	const int FRAMERATE_LIMIT = 60;
 
-	sf::Vector2f menuBoxSize = { 200.f, 66.f };
-	sf::Vector2f menuItemBoxSize = { 200.f, 33.f };
+	static const sf::Vector2f menuBoxSize = { 200.f, 66.f };
+	static const sf::Vector2f menuItemBoxSize = { 200.f, 33.f };
 }
