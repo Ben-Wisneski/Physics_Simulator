@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "menu.h"
-
+#include "configuration.h"
 
 void handleWindowEvents(sf::RenderWindow&, const sf::Event&);
 

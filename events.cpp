@@ -2,8 +2,6 @@
 #include "events.h"
 #include "object.h"
 
-
-
 //global variable to track if the shape is being dragged only used in the handleObjectEvents function
 struct draggedData
 {
@@ -89,16 +87,32 @@ void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::v
                 }
             }
         }
-        //where the right click menu is handeled
+		//where the right event is handled to show the right click menu
         else if (event.getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Right)
         {
             const auto* mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>();
 			const auto mousePos = mouseButtonPressed->position;
             menu.setPosition(static_cast<sf::Vector2f>(mousePos));
             menu.setIsVisible(true);
+
+            bool onCircleObject = false;
+			bool onRectObject = false;
+
 			for (int index = 0; index < circleVector.size(); ++index){
-                if (circleVector[index].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+				//check if the mouse position is on top of circle shape for each index of the circle vector
+                onCircleObject = circleVector[index].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
+                if (onCircleObject) {
                     menu.setOnObject(true);
+					continue; // Exit the loop if the mouse is on a circle object
+                }
+            }
+            for (int index = 0; index < rectVector.size(); ++index) {
+				//check if the mouse position is on top of rectangle shape for each index of the rectangle vector
+                onRectObject = rectVector[index].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
+                if (onCircleObject) { continue; }
+                if (onRectObject) {
+                    menu.setOnObject(true);
+					continue; // Exit the loop if the mouse is on a rectangle object
                 }
             }
         }

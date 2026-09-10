@@ -14,6 +14,7 @@ struct objects {
 
 //Menu that can be accessed in the main loop and event processing
 menu* Menu = new menu();
+//struct that holds all the vectors of shapes in menus in one spot
 objects* objectList = new objects();
 
 int main()
@@ -37,13 +38,12 @@ int main()
 	//add the shape to a vector of shapes so that we can draw multiple shapes in the window
 	//have to have multiple vectors for different shapes because they are different types and cannot be stored in the same vector
 	objectList->circleVector.push_back(shape);
-    std::vector<sf::RectangleShape> rectVector = {};
-	std::vector<menu> menuVector = { *Menu };
+	objectList->menuVector.push_back(*Menu);
     while (window.isOpen())
     {
 		// Handle events
         while (const std::optional event = window.pollEvent()) { processEvents(window, *event, objectList->circleVector, objectList->rectVector, objectList->menuVector, *Menu); }
-            
+
 		// Clear the window, draw the shape vector, and display the contents
         window.clear();
 		//drawing all the vectors of shapes in the window
@@ -52,8 +52,13 @@ int main()
         
         if (Menu->getIsVisible()) {
             window.draw(Menu->getMenuBox());
+            window.draw(Menu->getMenuItemBox_addObject());
+            window.draw(Menu->getMenuItemBox_deleteObject());
         }
         window.display();
     }
+
+	//delete the dynamically allocated menu and objectList to avoid memory leaks
+    delete Menu;
     delete objectList;
 }
