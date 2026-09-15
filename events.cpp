@@ -6,6 +6,7 @@ struct draggedData
 {
     bool isDragged = false;
     sf::Vector2f dragOffset{ 0.f, 0.f };
+    sf::Vector2f lastMousePos{ 0.f, 0.f }; // Track previous position for velocity calculation and throwing object
     int indexOfDraggedCirc = -1;
     int indexOfDraggedRect = -1;
 };
@@ -51,7 +52,7 @@ void handleRightClickMenu(sf::RenderWindow& window, const sf::Event& event, menu
 	}
 }
 
-static void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, std::vector<menu>& menuVector, std::vector<sf::RectangleShape>& rectVector, std::vector<PhysicsObject>& PhysicsObjects, menu& menu){
+void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, std::vector<menu>& menuVector, std::vector<sf::RectangleShape>& rectVector, std::vector<PhysicsObject>& PhysicsObjects, menu& menu){
 	// Handle events related to objects here
 	//should be able to click and drag the shape around the window
     if (event.is<sf::Event::MouseButtonPressed>())
@@ -68,23 +69,27 @@ static void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event,
                     //set the isDragged flag to true and store the index of the shape being dragged
                     data.isDragged = true;
                     PhysicsObjects[index].setDragged(true); // Set the isDragged flag in the PhysicsObject
+                    data.lastMousePos = static_cast<sf::Vector2f>(mousePos);
                     data.indexOfDraggedCirc = index;
                     //mark the offset between the mouse position and the shape's position so that the shape doesn't jump to the mouse position when dragging
                     data.dragOffset = static_cast<sf::Vector2f>(mousePos) - circleVector[index].getPosition();
-
+					break; //stop checking when found the first shape that contains the mouse position
                 }
             }
             for (int index = 0; index < rectVector.size(); ++index)
             {
                 if (rectVector[index].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
                 {
-                    //set the isDragged flag to true and store the index of the shape being dragged
                     data.isDragged = true;
                     data.indexOfDraggedRect = index;
-                    PhysicsObjects[index].setDragged(true); // Set the isDragged flag in the PhysicsObject
-                    //mark the offset between the mouse position and the shape's position so that the shape doesn't jump to the mouse position when dragging
+                    data.lastMousePos = static_cast<sf::Vector2f>(mousePos);
                     data.dragOffset = static_cast<sf::Vector2f>(mousePos) - rectVector[index].getPosition();
 
+                    // Calculate offset index in physicsVector (Circle Count + Rectangle Index)
+                    int physIndex = circleVector.size() + index;
+                    PhysicsObjects[physIndex].setDragged(true);
+                    PhysicsObjects[physIndex].setVelocity({ 0.f, 0.f });
+                    break; //stop checking when found the first shape that contains the mouse position
                 }
             }
         }
@@ -145,6 +150,32 @@ static void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event,
             // Sync physics object position and clear velocity/acceleration while held
             PhysicsObjects[data.indexOfDraggedCirc].setPosition(newPos);
             PhysicsObjects[data.indexOfDraggedCirc].setVelocity({ 0.f, 0.f });
+
+			//show the velocity of the shape being dragged in the console
+            sf::Vector2f mouseDelta = static_cast<sf::Vector2f>(mousePos) - data.lastMousePos;
+            
+            // Multiply by target FPS (e.g., 60) to convert movement per frame into velocity units (pixels/second)
+            PhysicsObjects[data.indexOfDraggedCirc].setVelocity(mouseDelta * 60.f);
+
+            data.lastMousePos = static_cast<sf::Vector2f>(mousePos);
+        }
+
+        if (data.indexOfDraggedRect != -1)
+        {
+            // Update shape position
+            rectVector[data.indexOfDraggedRect].setPosition(newPos);
+
+            // Sync physics object position and clear velocity/acceleration while held
+            PhysicsObjects[data.indexOfDraggedRect].setPosition(newPos);
+            PhysicsObjects[data.indexOfDraggedRect].setVelocity({ 0.f, 0.f });
+
+            //show the velocity of the shape being dragged in the console
+            sf::Vector2f mouseDelta = static_cast<sf::Vector2f>(mousePos) - data.lastMousePos;
+
+            // Multiply by target FPS (e.g., 60) to convert movement per frame into velocity units (pixels/second)
+            PhysicsObjects[data.indexOfDraggedRect].setVelocity(mouseDelta * 60.f);
+
+            data.lastMousePos = static_cast<sf::Vector2f>(mousePos);
         }
     }
 }

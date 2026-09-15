@@ -10,6 +10,7 @@ private:
 	sf::Vector2f acceleration;
 	float mass;
 	bool isDragged = false; // Flag to indicate if the object is being dragged
+	float bounceFactor = 20.f; // Coefficient of restitution for bounce effect
 public:
 	PhysicsObject(sf::Vector2f startPos = { 0.f, 0.f }, float m = 1.0f)
 		: position(startPos), velocity(0.f, 0.f), acceleration(0.f, 980.0f), mass(m) {
@@ -27,5 +28,5 @@ public:
 	void setDragged(bool dragged) { isDragged = dragged; }
 
 	// Updates internal kinematic state and applies position back to visual shape
-	void update(float deltaTime, sf::Transformable& shape);
+	void update(float deltaTime, sf::Shape& shape, unsigned int windowWidth, unsigned int windowHeight);
 };

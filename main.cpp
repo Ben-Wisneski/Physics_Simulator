@@ -6,9 +6,13 @@
 #include "menu.h"
 #include "PhysicsObject.h"
 
-struct objects {
+struct circledata_rectdata{
     std::vector<sf::CircleShape> circleVector;
     std::vector<sf::RectangleShape> rectVector;
+};
+
+struct objects {
+    circledata_rectdata shapeData;
     std::vector<menu> menuVector;
     std::vector<PhysicsObject> physicsVector;
 };
@@ -20,24 +24,35 @@ objects* objectList = new objects();
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), config::WINDOW_TITLE, sf::Style::Default);
+	//create the window with the specified configuration
+    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), config::WINDOW_TITLE, sf::Style::Default, sf::State::Windowed);
     window.setFramerateLimit(config::FRAMERATE_LIMIT);
-    // Force OS focus onto the SFML window
-    window.requestFocus();
-    
-    /*
-        Here is where you initialize shapes before adding to the vector
-    */
+
+    // Initialize Circles
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
-	shape.setPointCount(5);
-   
+    shape.setPointCount(5);
 
-	//add the shape to a vector of shapes so that we can draw multiple shapes in the window
-	//have to have multiple vectors for different shapes because they are different types and cannot be stored in the same vector
-	objectList->circleVector.push_back(shape);
-	//link the physics object to the shape so that we can update the position of the shape based on the physics object
+    sf::CircleShape shape22(100.f);
+    shape22.setFillColor(sf::Color::Blue);
+    shape22.setPosition({ 200.f, 0.f });
+
+    // Initialize Rectangles
+    sf::RectangleShape rect1(sf::Vector2f(100.f, 50.f));
+    rect1.setFillColor(sf::Color::Red);
+    rect1.setPosition({ 400.f, 0.f });
+
+    // 1. Add Circles and create matching PhysicsObjects
+    objectList->shapeData.circleVector.push_back(shape);
     objectList->physicsVector.emplace_back(shape.getPosition());
+
+    objectList->shapeData.circleVector.push_back(shape22);
+    objectList->physicsVector.emplace_back(shape22.getPosition());
+
+    // 2. Add Rectangles and create matching PhysicsObjects
+    //objectList->shapeData.rectVector.push_back(rect1);
+    //objectList->physicsVector.emplace_back(rect1.getPosition());
+    
 	objectList->menuVector.push_back(*Menu);
 
 
@@ -46,22 +61,29 @@ int main()
     while (window.isOpen())
     {
 		float deltaTime = clock.restart().asSeconds(); // Time elapsed since last frame
+        // 3. Update Circles Physics
+        int numCircles = objectList->shapeData.circleVector.size();
+        for (int i = 0; i < numCircles; i++) {
+            objectList->physicsVector[i].update(deltaTime,objectList->shapeData.circleVector[i],window.getSize().x,window.getSize().y
+            );
+        }
 
-        // Apply physics updates to circle shapes
-        for (int i = 0; i < objectList->circleVector.size(); i++) {
-            objectList->physicsVector[i].update(deltaTime, objectList->circleVector[i]);
+        // 4. Update Rectangles Physics (Offset by number of circles)
+        int numRects = objectList->shapeData.rectVector.size();
+        for (int i = 0; i < numRects; i++) {
+            objectList->physicsVector[numCircles + i].update(deltaTime,objectList->shapeData.rectVector[i],window.getSize().x,window.getSize().y);
         }
 
 		// Handle events
-        while (const std::optional event = window.pollEvent()) { processEvents(window, *event, objectList->circleVector, objectList->rectVector, objectList->menuVector, objectList->physicsVector, *Menu); }
+        while (const std::optional event = window.pollEvent()) { processEvents(window, *event, objectList->shapeData.circleVector, objectList->shapeData.rectVector, objectList->menuVector, objectList->physicsVector, *Menu); }
 
 
 
 		// Clear the window, draw the shape vector, and display the contents
         window.clear();
 		//drawing all the vectors of shapes in the window
-        for (const auto& s : objectList->circleVector) window.draw(s);
-        for (const auto& r : objectList->rectVector) window.draw(r);
+        for (const auto& s : objectList->shapeData.circleVector) window.draw(s);
+        for (const auto& r : objectList->shapeData.rectVector) window.draw(r);
         
         if (Menu->getIsVisible()) {
             window.draw(Menu->getMenuBox());
