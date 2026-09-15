@@ -1,6 +1,5 @@
 #include <iostream>
 #include "events.h"
-#include "object.h"
 
 //global variable to track if the shape is being dragged only used in the handleObjectEvents function
 struct draggedData
@@ -52,7 +51,7 @@ void handleRightClickMenu(sf::RenderWindow& window, const sf::Event& event, menu
 	}
 }
 
-void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, std::vector<menu>& menuVector, std::vector<sf::RectangleShape>& rectVector, menu& menu){
+static void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, std::vector<menu>& menuVector, std::vector<sf::RectangleShape>& rectVector, std::vector<PhysicsObject>& PhysicsObjects, menu& menu){
 	// Handle events related to objects here
 	//should be able to click and drag the shape around the window
     if (event.is<sf::Event::MouseButtonPressed>())
@@ -68,6 +67,7 @@ void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::v
                 {
                     //set the isDragged flag to true and store the index of the shape being dragged
                     data.isDragged = true;
+                    PhysicsObjects[index].setDragged(true); // Set the isDragged flag in the PhysicsObject
                     data.indexOfDraggedCirc = index;
                     //mark the offset between the mouse position and the shape's position so that the shape doesn't jump to the mouse position when dragging
                     data.dragOffset = static_cast<sf::Vector2f>(mousePos) - circleVector[index].getPosition();
@@ -81,6 +81,7 @@ void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::v
                     //set the isDragged flag to true and store the index of the shape being dragged
                     data.isDragged = true;
                     data.indexOfDraggedRect = index;
+                    PhysicsObjects[index].setDragged(true); // Set the isDragged flag in the PhysicsObject
                     //mark the offset between the mouse position and the shape's position so that the shape doesn't jump to the mouse position when dragging
                     data.dragOffset = static_cast<sf::Vector2f>(mousePos) - rectVector[index].getPosition();
 
@@ -122,6 +123,10 @@ void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::v
     {
 		//reset the isDragged flag and the index of the shape being dragged
         data.isDragged = false;
+        for(auto& obj : PhysicsObjects)
+        {
+            obj.setDragged(false); // Set the isDragged flag in the PhysicsObject
+        }
 		data.indexOfDraggedCirc = -1;
 		data.indexOfDraggedRect = -1;
     }
@@ -130,17 +135,23 @@ void handleObjectEvents(sf::RenderWindow& window, const sf::Event& event, std::v
     {
         const auto* mouseButtonMoved = event.getIf<sf::Event::MouseMoved>();
         sf::Vector2i mousePos = mouseButtonMoved->position;
-		//here is where to use the dragOffset and the indexOfDraggedShape to move the shape around the window
-        if(data.indexOfDraggedCirc != -1)
-            circleVector[data.indexOfDraggedCirc].setPosition(static_cast<sf::Vector2f>(mousePos) - data.dragOffset);
-        else
-            rectVector[data.indexOfDraggedRect].setPosition(static_cast<sf::Vector2f>(mousePos) - data.dragOffset);
+        sf::Vector2f newPos = static_cast<sf::Vector2f>(mousePos) - data.dragOffset;
+
+        if (data.indexOfDraggedCirc != -1)
+        {
+            // Update shape position
+            circleVector[data.indexOfDraggedCirc].setPosition(newPos);
+
+            // Sync physics object position and clear velocity/acceleration while held
+            PhysicsObjects[data.indexOfDraggedCirc].setPosition(newPos);
+            PhysicsObjects[data.indexOfDraggedCirc].setVelocity({ 0.f, 0.f });
+        }
     }
 }
 
-void processEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, std::vector<sf::RectangleShape>& rectVector, std::vector<menu>& menuVector, menu& menu)
+void processEvents(sf::RenderWindow& window, const sf::Event& event, std::vector<sf::CircleShape>& circleVector, std::vector<sf::RectangleShape>& rectVector, std::vector<menu>& menuVector, std::vector<PhysicsObject>& PhysicsObjects, menu& menu)
 {
 	handleWindowEvents(window, event);
     handleRightClickMenu(window, event, menu);
-	handleObjectEvents(window, event, circleVector, menuVector, rectVector, menu);
+	handleObjectEvents(window, event, circleVector, menuVector, rectVector, PhysicsObjects, menu);
 }

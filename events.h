@@ -2,11 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include "menu.h"
 #include "configuration.h"
+#include "PhysicsObject.h"
 
 void handleWindowEvents(sf::RenderWindow&, const sf::Event&);
 
 void handleRightClickMenu(sf::RenderWindow&, const sf::Event&, menu&);
 
-void handleObjectEvents(sf::RenderWindow&, const sf::Event&, std::vector<sf::CircleShape>&, std::vector<menu>&, std::vector<sf::RectangleShape>&, menu&);
+static void handleObjectEvents(sf::RenderWindow&, const sf::Event&, std::vector<sf::CircleShape>&, std::vector<menu>&, std::vector<sf::RectangleShape>&, std::vector<PhysicsObject>&, menu&);
 
-void processEvents(sf::RenderWindow&, const sf::Event&, std::vector<sf::CircleShape>&, std::vector<sf::RectangleShape>&, std::vector<menu>&, menu&);
+void processEvents(sf::RenderWindow&, const sf::Event&, std::vector<sf::CircleShape>&, std::vector<sf::RectangleShape>&, std::vector<menu>&, std::vector<PhysicsObject>&, menu&);

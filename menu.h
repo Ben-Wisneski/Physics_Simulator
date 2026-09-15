@@ -27,6 +27,11 @@ public:
 	sf::RectangleShape getMenuItemBox_deleteObject();
 };
 
+/*
+	Here are where functions are defined for the menu class
+	Fucntions are inlined in the header file to avoid clutter for a small class like this
+*/
+
 inline menu::menu()
 {
 	isVisible = false;
@@ -47,12 +52,25 @@ inline void menu::setOnObject(bool onObj) { onObject = onObj; }
 inline void menu::setPosition(sf::Vector2f pos)
 {
 	position = pos;
-	menuBox.setPosition(position);
-	menuItemBox_addObject.setPosition(position);
-	menuItemBox_deleteObject.setPosition(position + sf::Vector2f(0.f, config::menuItemBoxSize.y));
-	menuBox.setFillColor(sf::Color::White);
-	menuItemBox_addObject.setFillColor(sf::Color::Transparent);
-	menuItemBox_deleteObject.setFillColor(sf::Color::Transparent);
+	if (onObject)
+	{
+		menuBox.setPosition(position);
+		menuItemBox_addObject.setPosition(position);
+		menuItemBox_deleteObject.setPosition(position + sf::Vector2f(0.f, config::menuItemBoxSize.y));
+		menuBox.setFillColor(sf::Color::White);
+		menuItemBox_addObject.setFillColor(sf::Color::Transparent);
+		menuItemBox_deleteObject.setFillColor(sf::Color::Transparent);
+	}
+	else
+	{
+
+		menuBox.setPosition(position);
+		menuItemBox_addObject.setPosition(position);
+		menuItemBox_deleteObject.setPosition(sf::Vector2f(-100.f, -100.f));
+		menuBox.setFillColor(sf::Color::White);
+		menuItemBox_addObject.setFillColor(sf::Color::Transparent);
+	}
+	
 }
 
 inline sf::RectangleShape menu::getMenuBox() {

@@ -150,12 +150,13 @@ gdi32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDepend
   <ItemGroup>
     <ClCompile Include="events.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="configuration.h" />
     <ClInclude Include="events.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="PhysicsObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
